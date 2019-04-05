@@ -1,6 +1,6 @@
 from oauthlib.oauth1 import RequestValidator
 
-from ltilogin.setting import SAFE_CHARACTERS, KEY_LENGTH, NONCE_LENGTH
+from ltilogin import setting
 from ltilogin.models import LTIClient
 
 
@@ -16,17 +16,17 @@ class LTIRequestValidator(RequestValidator):
     @property
     def safe_characters(self):
         """ Allow also '-' character used in some uuid examples out there. """
-        return SAFE_CHARACTERS  # set
+        return setting.SAFE_CHARACTERS  # set
 
     @property
     def client_key_length(self):
         """ Loosen limits. """
-        return KEY_LENGTH
+        return setting.KEY_LENGTH_RANGE
 
     @property
     def nonce_length(self):
         """ Loosen limits. """
-        return NONCE_LENGTH
+        return setting.NONCE_LENGTH
 
     @property
     def enforce_ssl(self):
@@ -59,12 +59,10 @@ class LTIRequestValidator(RequestValidator):
     def get_client_secret(self, client_key, request):
         if client_key in self.__secrets:
             return self.__secrets[client_key]
-        try:
-            secret = LTIClient.objects.values('secret').get(key=client_key)['secret']
-        except LTIClient.DoesNotExist:
+        secret = LTIClient.query.get(client_key).secret
+        if secret is None:
             if client_key == "DEAD":
                 return "DEAD"
-            return None
         self.__secrets[client_key] = secret
         return secret
 

@@ -19,7 +19,7 @@ bp = Blueprint('lti', __name__, url_prefix='/lti')
 @bp.route('/', methods=['POST'])
 def lti():
     uri = request.base_url
-    headers = request.headers
+    headers = dict(request.headers)
     method = request.method
     body = request.form
     if 'HTTP_AUTHORIZATION' in headers:
@@ -42,7 +42,7 @@ def lti():
     """ 
     Load user from the request, store in current_user global object
      """
-    load_user_from_request(oauth_request=oauth_request)
+    user_test = load_user_from_request(oauth_request=oauth_request)
     user = current_user
     if not user:
         raise PermissionDenied('Authentication of a LTI request did not yield an user')

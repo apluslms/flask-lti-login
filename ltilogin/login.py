@@ -8,8 +8,8 @@ logger = logging.getLogger('flask-ltilogin.login')
 
 
 @login_manager.user_loader
-def load_user(user_id):
-    user = User.query.filter_by(id=user_id).first()
+def load_user(id):
+    user = User.query.filter_by(id=id).first()
     return user
 
 
@@ -17,7 +17,7 @@ def load_user(user_id):
 def load_user_from_request(oauth_request):
     if not oauth_request:
         return None
-    if not oauth_request.user_id:
+    if not hasattr(oauth_request, 'user_id'):
         logger.warning('LTI login attempt without a user id.')
         return None
 

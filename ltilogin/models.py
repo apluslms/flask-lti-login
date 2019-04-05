@@ -47,13 +47,13 @@ def create_new_secret():
 def key_validator(key):
     return word_validator(key,
                           charset=setting.SAFE_CHARACTERS,
-                          length=setting.KEY_LENGTH)
+                          length=setting.KEY_LENGTH_RANGE)
 
 
 def secret_validator(secret):
     return word_validator(secret,
                           charset=None,
-                          length=setting.SECRET_LENGTH)
+                          length=setting.SECRET_LENGTH_RANGE)
 
 """
 Store the LTIClient key/secret

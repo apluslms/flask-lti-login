@@ -1,7 +1,7 @@
 from oauthlib.oauth1 import RequestValidator
 
-from .setting import SAFE_CHARACTERS, KEY_LENGTH, NONCE_LENGTH
-from .models import LTIClient
+from ltilogin.setting import SAFE_CHARACTERS, KEY_LENGTH, NONCE_LENGTH
+from ltilogin.models import LTIClient
 
 
 class LTIRequestValidator(RequestValidator):

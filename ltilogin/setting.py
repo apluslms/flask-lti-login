@@ -1,6 +1,6 @@
 import string
 
-
+LOGIN_REDIRECT_URL = "127.0.0.1:5000"
 BASE_CHARACTERS = string.ascii_letters + string.digits
 SAFE_CHARACTERS = frozenset(BASE_CHARACTERS + '-')
 KEY_LENGTH_RANGE = (6, 128)

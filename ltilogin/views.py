@@ -4,7 +4,7 @@ from flask import (
 )
 from oauthlib.common import urlencode
 from oauthlib.oauth1 import SignatureOnlyEndpoint
-from flask_login import login_user
+from flask_login import login_user, current_user
 from ltilogin.validators import LTIRequestValidator
 from ltilogin.exceptions import PermissionDenied, ValidationError
 from ltilogin.login import load_user_from_request
@@ -39,8 +39,11 @@ def lti():
         oauth_request.lti_message_type != 'basic-lti-launch-request'):
         logger.warning('A LTI login request is not LTI-1p0 or basic-lti-launch-request.')
         raise PermissionDenied('Version is not LTI-1p0 or type is not basic-lti-launch-request for a LTI login request.')
-
-    user = load_user_from_request(oauth_request=oauth_request)
+    """ 
+    Load user from the request, store in current_user global object
+     """
+    load_user_from_request(oauth_request=oauth_request)
+    user = current_user
     if not user:
         raise PermissionDenied('Authentication of a LTI request did not yield an user')
     if not user.is_active:
@@ -52,9 +55,9 @@ def lti():
     oauth_request.redirect_url = setting.LOGIN_REDIRECT_URL
     oauth_request.set_cookies = []
 
-    #sed signal
-
-    
+    #send signal
+    #TODO
+    #login use into session
     login_user(user)
     flash('Logged in successfully.')
     response = redirect(oauth_request.redirect_url)

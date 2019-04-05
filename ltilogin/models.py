@@ -55,13 +55,19 @@ def secret_validator(secret):
                           charset=None,
                           length=setting.SECRET_LENGTH)
 
-
+"""
+Store the LTIClient key/secret
+Use "python manage.py add_key" to add a new key/secret pair with empty description
+user --key -- secret --description to define the key secret and description
+"""
 class LTIClient(db.Model):
     key = db.Column(db.String(setting.KEY_LENGTH_RANGE[1]), primary_key=True)
     secret = db.Column(db.String(setting.SECRET_LENGTH_RANGE[1]))
     description = db.Column(db.Text)
 
-
+"""
+Inherited from the UserMixin in flask_login
+"""
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(setting.USER_NAME_LENGTH), unique=True, nullable=False)

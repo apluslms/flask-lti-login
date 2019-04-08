@@ -16,33 +16,19 @@ logger = logging.getLogger('flask-ltilogin.lti')
 bp = Blueprint('lti', __name__, url_prefix='/lti')
 
 
+
 @bp.route('/', methods=['POST'])
 def lti():
     uri = request.base_url
     headers = dict(request.headers)
     method = request.method
     body = request.form
-    if 'HTTP_AUTHORIZATION' in headers:
-        headers['Authorization'] = headers['HTTP_AUTHORIZATION']
-    if 'CONTENT_TYPE' in headers:
-        headers['Content-Type'] = headers['CONTENT_TYPE']
-
-    # create oauth endpoint and validate request
     endpoint = SignatureOnlyEndpoint(LTIRequestValidator())
     is_valid, oauth_request = endpoint.validate_request(uri, method, body, headers) 
 
     if not is_valid:
         logger.warning('An invalid LTI login request. Are the tokens configured correctly?')
         raise PermissionDenied('An invalid LTI login request. Are the tokens configured correctly?')
-
-    if (oauth_request.lti_version != 'LTI-1p0' or
-        oauth_request.lti_message_type != 'basic-lti-launch-request'):
-        logger.warning('A LTI login request is not LTI-1p0 or basic-lti-launch-request.')
-        raise PermissionDenied('Version is not LTI-1p0 or type is not basic-lti-launch-request for a LTI login request.')
-    """ 
-    Load user from the request, store in current_user global object
-     """
-    user_test = load_user_from_request(oauth_request=oauth_request)
     user = current_user
     if not user:
         raise PermissionDenied('Authentication of a LTI request did not yield an user')
@@ -51,7 +37,7 @@ def lti():
         raise PermissionDenied('An authenticated user is not active')
 
     # Set vars for listenters
-    request.oauth = oauth_request
+    # request.oauth = oauth_request
     oauth_request.redirect_url = setting.LOGIN_REDIRECT_URL
     oauth_request.set_cookies = []
 
@@ -60,10 +46,14 @@ def lti():
     #login use into session
     login_user(user)
     flash('Logged in successfully.')
-    response = redirect(oauth_request.redirect_url)
+    response = redirect(setting.LOGIN_REDIRECT_URL)
 
     for args, kwargs in oauth_request.set_cookies:
         response.set_cookie(*args, **kwargs)
 
     logger.debug('Login completed for a LTI authenticated user: %s', user)
     return response
+
+@bp.route('/success', methods=['GET'])
+def success():
+    return  render_template('login_success.html', user=current_user)

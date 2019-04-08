@@ -1,6 +1,6 @@
 import string
 
-LOGIN_REDIRECT_URL = "127.0.0.1:5000"
+LOGIN_REDIRECT_URL = "/lti/success"
 BASE_CHARACTERS = string.ascii_letters + string.digits
 SAFE_CHARACTERS = frozenset(BASE_CHARACTERS + '-')
 KEY_LENGTH_RANGE = (6, 128)
@@ -13,3 +13,4 @@ FIRST_NAME_LENGTH=50
 LAST_NAME_LENGTH=50
 EMAIL_LENGTH=50
 CREATE_UNKNOWN_USER = True
+SECRET_KEY = 'my super secret key'.encode('utf8')

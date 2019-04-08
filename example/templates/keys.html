@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+  <h1>{% block title %}Key Management{% endblock %}</h1>
+{% block nav %}
+    <a class="nav-link active" href="/">Main Page</a>
+    <a class="nav-link active" href="/keys">Key Management</a>
+{% endblock %}
+{% block body %}
+    <h2>Hi {{ user.first_name }} {{ user.last_name }}!</h2>
+
+<table class="table">
+  <caption>Keys</caption>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Secret</th>
+        <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for each in keys %}
+    <tr>
+      <td>{{ each.key }}</td>
+      <td>{{ each.secret }}</td>
+    <td>{{ each.description }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% endblock %}

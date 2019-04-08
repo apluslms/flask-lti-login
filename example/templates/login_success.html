@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block body %}
+  {% for message in get_flashed_messages() %}
+    <div class="badge-info">{{ message }}</div>
+  {% endfor %}
+    <div>User id:{{ user.username }}</div>
+    <div>User email:{{ user.email }}:</div>
+    <div>User fullname:{{ user.first_name }} {{ user.last_name }}</div>
+    <a class="btn btn-info" href="/" role="button">Go to main page</a>
+
+{% endblock %}

@@ -1,3 +1,8 @@
 flask
 flask_sqlalchemy
 oauthlib
+flask_migrate
+flask_login
+flask_script
+blinker
+

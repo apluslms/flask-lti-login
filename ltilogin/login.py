@@ -33,19 +33,16 @@ def load_user_from_request(oauth_request):
     first_name = body['lis_person_name_given'][:setting.FIRST_NAME_LENGTH] or ''
     last_name = body['lis_person_name_family'][:setting.LAST_NAME_LENGTH] or ''
     roles = frozenset(body['roles'].split(',')) if oauth_request.body['roles'] else frozenset()
-    print(username, email, first_name, last_name, roles)
     if accepted_roles and roles.isdisjoint(accepted_roles):
         logger.warning('LTI login attempt without accepted user role: %s', roles)
         return None
         # get
     user = User.query.filter_by(username=username).first()
-    print(user)
     if user is None:
         if not setting.CREATE_UNKNOWN_USER:
             return None
             # create new
         user = User(username=username, email=email, first_name=first_name, last_name=last_name, is_active=True)
-
         logger.info('Created a new LTI authenticated user: %s', user)
         # if exist, update
     user.email = email

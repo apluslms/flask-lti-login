@@ -23,13 +23,14 @@ def lti():
     headers = dict(request.headers)
     method = request.method
     body = request.form
-    endpoint = SignatureOnlyEndpoint(LTIRequestValidator())
-    is_valid, oauth_request = endpoint.validate_request(uri, method, body, headers) 
 
+    endpoint = SignatureOnlyEndpoint(LTIRequestValidator())
+    is_valid, oauth_request = endpoint.validate_request(uri, method, body, headers)
     if not is_valid:
         logger.warning('An invalid LTI login request. Are the tokens configured correctly?')
         raise PermissionDenied('An invalid LTI login request. Are the tokens configured correctly?')
-    user = current_user
+
+    user = load_user_from_request(oauth_request)
     if not user:
         raise PermissionDenied('Authentication of a LTI request did not yield an user')
     if not user.is_active:
@@ -56,4 +57,4 @@ def lti():
 
 @bp.route('/success', methods=['GET'])
 def success():
-    return  render_template('login_success.html', user=current_user)
+    return render_template('login_success.html', user=current_user)

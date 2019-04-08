@@ -2,11 +2,6 @@ import logging
 from flask_login import LoginManager
 from ltilogin.models import User, db
 from ltilogin import setting
-from oauthlib.common import urlencode
-from oauthlib.oauth1 import SignatureOnlyEndpoint
-from ltilogin.validators import LTIRequestValidator
-from ltilogin.exceptions import PermissionDenied, ValidationError
-from ltilogin import setting
 
 
 login_manager = LoginManager()
@@ -18,32 +13,8 @@ def load_user(id):
     user = User.query.filter_by(id=id).first()
     return user
 
-@login_manager.request_loader
-def load_user_from_request(request):
-    uri = request.base_url
-    headers = dict(request.headers)
-    method = request.method
-    body = request.form
-    if 'HTTP_AUTHORIZATION' in headers:
-        headers['Authorization'] = headers['HTTP_AUTHORIZATION']
-    if 'CONTENT_TYPE' in headers:
-        headers['Content-Type'] = headers['CONTENT_TYPE']
 
-    # create oauth endpoint and validate request
-    endpoint = SignatureOnlyEndpoint(LTIRequestValidator())
-    is_valid, oauth_request = endpoint.validate_request(uri, method, body, headers) 
-
-    if not is_valid:
-        logger.warning('An invalid LTI login request. Are the tokens configured correctly?')
-        raise PermissionDenied('An invalid LTI login request. Are the tokens configured correctly?')
-
-    if (oauth_request.lti_version != 'LTI-1p0' or
-        oauth_request.lti_message_type != 'basic-lti-launch-request'):
-        logger.warning('A LTI login request is not LTI-1p0 or basic-lti-launch-request.')
-        raise PermissionDenied('Version is not LTI-1p0 or type is not basic-lti-launch-request for a LTI login request.')
-    """ 
-    Load user from the request, store in current_user global object
-     """
+def load_user_from_request(oauth_request):
     body = oauth_request.body
     print(body)
     if not oauth_request:

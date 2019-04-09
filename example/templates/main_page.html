@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+  <h1>{% block title %}Main Page{% endblock %}</h1>
+{% endblock %}
+{% block nav %}
+    <a class="nav-link active" href="/">Main Page</a>
+    <a class="nav-link active" href="/keys">Key Management</a>
+{% endblock %}
+{% block body %}
+    <h2>Hi {{ user.first_name }} {{ user.last_name }}!</h2>
+    <div>User id:{{ user.username }}</div>
+    <div>User email:{{ user.email }}:</div>
+    <div>User fullname:{{ user.first_name }} {{ user.last_name }}</div>
+
+{% endblock %}

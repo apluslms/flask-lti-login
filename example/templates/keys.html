@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
   <h1>{% block title %}Key Management{% endblock %}</h1>
 {% block nav %}
-    <a class="nav-link active" href="/">Main Page</a>
-    <a class="nav-link active" href="/keys">Key Management</a>
+
 {% endblock %}
 {% block body %}
-    <h2>Hi {{ user.first_name }} {{ user.last_name }}!</h2>
+
 
 <table class="table">
   <caption>Keys</caption>
@@ -13,17 +12,16 @@
     <tr>
       <th>Key</th>
       <th>Secret</th>
-        <th>Description</th>
+
     </tr>
   </thead>
   <tbody>
-  {% for each in keys %}
+  {% for k in keys.secret %}
     <tr>
-      <td>{{ each.key }}</td>
-      <td>{{ each.secret }}</td>
-    <td>{{ each.description }}</td>
+      <td>{{ k }}</td>
+      <td>{{ keys.secret[k] }}</td>
     </tr>
-    {% endfor %}
+{% endfor %}
   </tbody>
 </table>
 

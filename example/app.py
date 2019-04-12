@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from ltilogin import lti
 from ltilogin.signals import lti_login_authenticated
 from example import config
-from example.models import db, LTIClient, write_user_to_db
+from example.models import db, User, write_user_to_db
 
 
 lti_login_authenticated.connect(write_user_to_db)
@@ -19,16 +19,22 @@ with app.app_context():
     migrate = Migrate(app, db)
 
 
-# @login_required
+@login_manager.user_loader
+def load_user(id):
+    user = User.query.filter_by(id=id).first()
+    return user
+
+@login_required
 @app.route('/', methods=['GET'])
 def main_page():
     return render_template('main_page.html', user=current_user)
 
 
-# @login_required
+@login_required
 @app.route('/keys', methods=['GET'])
 def keys():
-    keys = app.config['LTI_CONFIG']['secret']
+    keys = app.config['LTI_CONFIG']
+    print(keys)
     return render_template('keys.html', user=current_user, keys=keys)
 
 

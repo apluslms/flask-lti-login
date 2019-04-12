@@ -11,6 +11,12 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/JohnDing1995/flask-lti-login",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'flask',
+        'flask_sqlalchemy',
+        'oauthlib',
+        'blinker'
+     ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

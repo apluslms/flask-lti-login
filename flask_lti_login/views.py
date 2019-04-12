@@ -1,16 +1,17 @@
+from .validators import LTIRequestValidator
+from .exceptions import PermissionDenied
+from .login import load_user_from_request
+from .signals import lti_login_authenticated
 import logging
+
 from flask import (
     Blueprint, flash, redirect, request,
     current_app)
 from oauthlib.oauth1 import SignatureOnlyEndpoint
-from ltilogin.validators import LTIRequestValidator
-from ltilogin.exceptions import PermissionDenied
-from ltilogin.login import load_user_from_request
-from ltilogin.signals import lti_login_authenticated
-
-logger = logging.getLogger('ltilogin')
 
 lti = Blueprint('lti', __name__, url_prefix='/lti')
+
+logger = logging.getLogger('flask_lti_login.views')
 
 
 @lti.route('/', methods=['POST'])
@@ -48,5 +49,3 @@ def lti_login():
 
     logger.debug('Login completed for a LTI authenticated user: %s', user)
     return response
-
-

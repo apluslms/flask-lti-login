@@ -1,4 +1,4 @@
-from . import current_app
+from flask import current_app
 from oauthlib.oauth1 import RequestValidator
 
 

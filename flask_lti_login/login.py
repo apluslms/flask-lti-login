@@ -1,19 +1,25 @@
 import logging
+
+from flask import current_app
 from flask_login import LoginManager
-from ltilogin.models import User
-from . import current_app
+
+from flask_lti_login.models import User
 
 login_manager = LoginManager()
 logger = logging.getLogger('ltilogin.login')
 
 
+def check_user_id(user_id, guid):
+    return user_id if '@' in user_id else user_id + "@" + guid
+
+
 def load_user_from_request(oauth_request):
     body = oauth_request.body
     if not oauth_request:
-        logger.Warning('No request')
+        logger.warning('No request')
         return None
     try:
-        use_id = body['user_id'][:current_app.config['USER_NAME_LENGTH']]
+        user_id = body['user_id'][:current_app.config['USER_NAME_LENGTH']]
     except KeyError:
         logger.warning('LTI login attempt without a user id.')
         return None
@@ -24,13 +30,21 @@ def load_user_from_request(oauth_request):
     email = body['lis_person_contact_email_primary'][:current_app.config['EMAIL_LENGTH']] or ''
     display_name = body['lis_person_name_given'][:current_app.config['FIRST_NAME_LENGTH']] or ''
     sorting_name = body['lis_person_name_family'][:current_app.config['LAST_NAME_LENGTH']] or ''
-    full_name = body['lis_person_name_full'][:(current_app.config['FIRST_NAME_LENGTH'] + current_app.config['LAST_NAME_LENGTH'])] or ' '
+    full_name = body['lis_person_name_full'][
+                :(current_app.config['FIRST_NAME_LENGTH'] + current_app.config['LAST_NAME_LENGTH'])] or ' '
     roles = frozenset(body['roles'].split(',')) if oauth_request.body['roles'] else frozenset()
     if accepted_roles and roles.isdisjoint(accepted_roles):
         logger.warning('LTI login attempt without accepted user role: %s', roles)
         return None
     # Retrieve user information
-    user = User(user_id=use_id, email=email, display_name=display_name, sorting_name=sorting_name, full_name=full_name, guid=body['tool_consumer_instance_guid'])
+    print(check_user_id(user_id, body['tool_consumer_instance_guid']))
+    user = User(
+        user_id=check_user_id(user_id, body['tool_consumer_instance_guid']),
+        email=email,
+        display_name=display_name,
+        sorting_name=sorting_name,
+        full_name=full_name
+    )
     # user.is_staff = staff_roles and not roles.isdisjoint(staff_roles) or False
     logger.info('LTI authentication accepted for: %s', user)
     oauth_request.redirect_url = current_app.config['LOGIN_REDIRECT_URL']

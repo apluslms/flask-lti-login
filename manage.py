@@ -1,10 +1,10 @@
 from flask_migrate import MigrateCommand, Migrate
 from flask_script import Manager
 from example import setting
-from ltilogin.models import create_new_key, create_new_secret ,LTIClient
-from ltilogin.login import login_manager
+from flask_lti_login.models import create_new_key, create_new_secret ,LTIClient
+from flask_lti_login.login import login_manager
 from flask import Flask
-from ltilogin import views
+from flask_lti_login import views
 
 app = Flask(__name__)
 # app = create_app()

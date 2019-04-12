@@ -1,11 +1,10 @@
 from flask import Flask, render_template
 from flask_login import login_required, current_user, LoginManager
 from flask_migrate import Migrate
-from ltilogin import lti
-from ltilogin.signals import lti_login_authenticated
+
 from example import config
 from example.models import db, User, write_user_to_db
-
+from flask_lti_login import lti, lti_login_authenticated
 
 lti_login_authenticated.connect(write_user_to_db)
 login_manager = LoginManager()
@@ -24,6 +23,7 @@ def load_user(id):
     user = User.query.filter_by(id=id).first()
     return user
 
+
 @login_required
 @app.route('/', methods=['GET'])
 def main_page():
@@ -33,9 +33,8 @@ def main_page():
 @login_required
 @app.route('/keys', methods=['GET'])
 def keys():
-    keys = app.config['LTI_CONFIG']
-    print(keys)
-    return render_template('keys.html', user=current_user, keys=keys)
+    lti_keys = app.config['LTI_CONFIG']
+    return render_template('keys.html', user=current_user, keys=lti_keys)
 
 
 if __name__ == '__main__':

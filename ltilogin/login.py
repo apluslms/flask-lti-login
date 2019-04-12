@@ -1,57 +1,38 @@
 import logging
 from flask_login import LoginManager
-from ltilogin.models import User, db
-from ltilogin import setting
-
+from ltilogin.models import User
+from . import current_app
 
 login_manager = LoginManager()
-logger = logging.getLogger('flask-ltilogin.login')
-
-
-@login_manager.user_loader
-def load_user(id):
-    user = User.query.filter_by(id=id).first()
-    return user
+logger = logging.getLogger('ltilogin.login')
 
 
 def load_user_from_request(oauth_request):
     body = oauth_request.body
-    print(body)
     if not oauth_request:
         logger.Warning('No request')
         return None
     try:
-        username = body['user_id'][:setting.USER_NAME_LENGTH]
+        use_id = body['user_id'][:current_app.config['USER_NAME_LENGTH']]
     except KeyError:
         logger.warning('LTI login attempt without a user id.')
         return None
 
     accepted_roles = None
     staff_roles = None
-        # get parameters and truncate to lengths that can be stored into database
-    email = body['lis_person_contact_email_primary'][:setting.EMAIL_LENGTH] or ''
-    first_name = body['lis_person_name_given'][:setting.FIRST_NAME_LENGTH] or ''
-    last_name = body['lis_person_name_family'][:setting.LAST_NAME_LENGTH] or ''
+    # get parameters and truncate to lengths that can be stored into database
+    email = body['lis_person_contact_email_primary'][:current_app.config['EMAIL_LENGTH']] or ''
+    display_name = body['lis_person_name_given'][:current_app.config['FIRST_NAME_LENGTH']] or ''
+    sorting_name = body['lis_person_name_family'][:current_app.config['LAST_NAME_LENGTH']] or ''
+    full_name = body['lis_person_name_full'][:(current_app.config['FIRST_NAME_LENGTH'] + current_app.config['LAST_NAME_LENGTH'])] or ' '
     roles = frozenset(body['roles'].split(',')) if oauth_request.body['roles'] else frozenset()
     if accepted_roles and roles.isdisjoint(accepted_roles):
         logger.warning('LTI login attempt without accepted user role: %s', roles)
         return None
-        # get
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        if not setting.CREATE_UNKNOWN_USER:
-            return None
-            # create new
-        user = User(username=username, email=email, first_name=first_name, last_name=last_name, is_active=True)
-        logger.info('Created a new LTI authenticated user: %s', user)
-        # if exist, update
-    user.email = email
-    user.first_name = first_name
-    user.last_name = last_name
-    user.is_staff = staff_roles and not roles.isdisjoint(staff_roles) or False
-    db.session.add(user)
-    db.session.commit()
+    # Retrieve user information
+    user = User(user_id=use_id, email=email, display_name=display_name, sorting_name=sorting_name, full_name=full_name, guid=body['tool_consumer_instance_guid'])
+    # user.is_staff = staff_roles and not roles.isdisjoint(staff_roles) or False
     logger.info('LTI authentication accepted for: %s', user)
-    oauth_request.redirect_url = setting.LOGIN_REDIRECT_URL
+    oauth_request.redirect_url = current_app.config['LOGIN_REDIRECT_URL']
     # oauth_request.set_cookies = []
     return user

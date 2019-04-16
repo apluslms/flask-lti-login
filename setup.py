@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="flask-lti-login",
-    version="0.0.1",
+    version="0.0.2",
     auther="Ruiyang Ding",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -13,7 +13,6 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'flask',
-        'flask_sqlalchemy',
         'oauthlib',
         'blinker'
      ],

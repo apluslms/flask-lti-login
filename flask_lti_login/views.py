@@ -40,8 +40,6 @@ def lti_login():
 
     # send signal
     lti_login_authenticated.send(**dict(user._asdict()))
-
-    flash('Logged in successfully.')
     response = redirect(current_app.config['LOGIN_REDIRECT_URL'])
 
     for args, kwargs in oauth_request.set_cookies:

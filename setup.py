@@ -13,7 +13,6 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'flask',
-        'flask_sqlalchemy',
         'oauthlib',
         'blinker'
      ],

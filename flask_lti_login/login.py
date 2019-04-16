@@ -37,7 +37,6 @@ def load_user_from_request(oauth_request):
         logger.warning('LTI login attempt without accepted user role: %s', roles)
         return None
     # Retrieve user information
-    print(check_user_id(user_id, body['tool_consumer_instance_guid']))
     user = User(
         user_id=check_user_id(user_id, body['tool_consumer_instance_guid']),
         email=email,

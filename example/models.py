@@ -31,13 +31,14 @@ def write_user_to_db(*args, **kwargs):
         if not config.CREATE_UNKNOWN_USER:
             return None
             # create new
-        user = User(user_id=user_id, email=kwargs['email'], display_name=kwargs['display_name'], sorting_name=kwargs['sorting_name'], is_active=True)
+        user = User(user_id=user_id, email=kwargs['email'], display_name=kwargs['display_name'], sorting_name=kwargs['sorting_name'], roles=kwargs['roles'],is_active=True)
         logger.info('Created a new LTI authenticated user: %s', user)
         db.session.add(user)
     # if exist, update
     user.sorting_name = kwargs['sorting_name']
     user.display_name = kwargs['display_name']
     user.email = kwargs['email']
+    user.roles = kwargs['roles']
     # user.is_staff = staff_roles and not roles.isdisjoint(staff_roles) or False
     db.session.commit()
     login_user(user)
@@ -122,5 +123,6 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(config.EMAIL_LENGTH), unique=True, nullable=False)
     display_name = db.Column(db.String(config.FIRST_NAME_LENGTH))
     sorting_name = db.Column(db.String(config.LAST_NAME_LENGTH))
+    roles = db.Column(db.String)
     full_name = db.Column(db.String(config.LAST_NAME_LENGTH + config.FIRST_NAME_LENGTH))
     is_active = db.Column(db.Boolean, default=True)

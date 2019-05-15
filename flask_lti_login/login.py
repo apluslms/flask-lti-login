@@ -32,17 +32,18 @@ def load_user_from_request(oauth_request):
     sorting_name = body['lis_person_name_family'][:current_app.config['LAST_NAME_LENGTH']] or ''
     full_name = body['lis_person_name_full'][
                 :(current_app.config['FIRST_NAME_LENGTH'] + current_app.config['LAST_NAME_LENGTH'])] or ' '
-    roles = frozenset(body['roles'].split(',')) if oauth_request.body['roles'] else frozenset()
-    if accepted_roles and roles.isdisjoint(accepted_roles):
-        logger.warning('LTI login attempt without accepted user role: %s', roles)
-        return None
+    roles = body['roles'] if oauth_request.body['roles'] else None
+    # if accepted_roles and roles.isdisjoint(accepted_roles):
+    #     logger.warning('LTI login attempt without accepted user role: %s', roles)
+    #     return None
     # Retrieve user information
     user = User(
         user_id=check_user_id(user_id, body['tool_consumer_instance_guid']),
         email=email,
         display_name=display_name,
         sorting_name=sorting_name,
-        full_name=full_name
+        full_name=full_name,
+        roles=roles
     )
     # user.is_staff = staff_roles and not roles.isdisjoint(staff_roles) or False
     logger.info('LTI authentication accepted for: %s', user)

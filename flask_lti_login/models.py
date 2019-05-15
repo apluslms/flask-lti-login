@@ -15,4 +15,4 @@ if '@' not in user_id:
 
 query parameter 'next' -> redirect_url
 '''
-User = namedtuple('User', ['user_id', 'full_name', 'display_name', 'sorting_name', 'email'])
+User = namedtuple('User', ['user_id', 'full_name', 'display_name', 'sorting_name', 'email', 'roles'])

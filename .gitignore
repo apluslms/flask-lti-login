@@ -4,3 +4,5 @@ venv/
 *.sqlite
 __pycache__/
 .idea/
+build/
+dist/
